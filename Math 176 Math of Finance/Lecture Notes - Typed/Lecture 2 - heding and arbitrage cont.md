@@ -115,4 +115,10 @@ $$O_AO_B>1$$
 
 
 ## Expected Value
-$ \text{suppose }X_d\text{ is a discrete random variable that takes on values }{x_1}$
+$ \text{suppose }X_d\text{ is a discrete random variable that takes on values }\{x_1,x_2, x_3, ..., x_n\} \text{ with probabilities } \{p_1, p_2,p_3, ..., p_n\}$
+
+The probabilities $p_i$ have to sum up to 1 when you are dealing with mutually exculsive events that encompass all possible outcomes
+$$ \sum_{i=1}^n{p_i} = 1$$
+
+Then the *Expected Value* of $X_d$ is:
+$$ E(X_d) = \sum_{i=1}^n\ x_i \cdot p_i $$
