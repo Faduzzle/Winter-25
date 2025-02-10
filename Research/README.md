@@ -2,4 +2,4 @@
 1. The effect of cryptocurrency and tokenization on financial markets
 
 1. Bonds Forecasting
-    - I'm going to attempt to forecast bond prices (consequentyly interest rates) by analyzing demand and supply
+    - I'm going to attempt to forecast bond prices (consequently interest rates) by analyzing demand and supply
