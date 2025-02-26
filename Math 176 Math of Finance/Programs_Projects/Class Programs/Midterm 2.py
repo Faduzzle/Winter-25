@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import pandas as pd
 from scipy.stats import norm
 
 """
@@ -15,6 +16,45 @@ print(option_behavior)
 
 
 #   solving for price of option
+
+def black_scholestwo(S, X, T, t, r, sigma):
+    """
+    Solve Black-Scholes equations for European call and put options.
+    blac
+    :param S: Current stock price
+    :param X: Strike price
+    :param T: Time to expiration
+    :param t: Current time
+    :param r: Risk-free interest rate
+    :param sigma: Volatility of the underlying asset
+    :return: Dictionary with call and put option values
+    """
+    tau = T - t
+    d1 = (np.log(S / X) + (r + 0.5 * sigma ** 2) * tau) / (sigma * np.sqrt(tau))
+    d2 = d1 - sigma * np.sqrt(tau)
+    
+    call_price = S * norm.cdf(d1) - np.exp(-r * tau) * X * norm.cdf(d2)
+    put_price = np.exp(-r * tau) * X * norm.cdf(-d2) - S * norm.cdf(-d1)
+    
+    call_delta = norm.cdf(d1)
+    put_delta = -norm.cdf(-d1)
+    
+    gamma = norm.pdf(d1) / (S * sigma * np.sqrt(tau))
+    vega = S * norm.pdf(d1) * np.sqrt(tau)
+    theta_call = - (S * norm.pdf(d1) * sigma) / (2 * np.sqrt(tau)) - r * X * np.exp(-r * tau) * norm.cdf(d2)
+    theta_put = - (S * norm.pdf(d1) * sigma) / (2 * np.sqrt(tau)) + r * X * np.exp(-r * tau) * norm.cdf(-d2)
+    rho_call = X * tau * np.exp(-r * tau) * norm.cdf(d2)
+    rho_put = -X * tau * np.exp(-r * tau) * norm.cdf(-d2)
+    
+    data = {
+        "Metric": ["Price", "Delta", "Gamma", "Vega", "Theta", "Rho"],
+        "Call": [call_price, call_delta, gamma, vega, theta_call, rho_call],
+        "Put": [put_price, put_delta, gamma, vega, theta_put, rho_put]
+    }
+    
+
+    return pd.DataFrame(data)
+
 
 def black_scholes(S, X, T, t, r, sigma, option_type="call"):
     """
@@ -44,8 +84,9 @@ def black_scholes(S, X, T, t, r, sigma, option_type="call"):
     
     gamma = norm.pdf(d1) / (S * sigma * np.sqrt(tau))
     vega = S * norm.pdf(d1) * np.sqrt(tau)
-    theta = - (S * norm.pdf(d1) * sigma) / (2 * np.sqrt(tau)) - r * X * np.exp(-r * tau) * norm.cdf(d2 if option_type == "call" else -d2)
-    rho = X * tau * np.exp(-r * tau) * norm.cdf(d2 if option_type == "call" else -d2)
+    theta = - (S * norm.pdf(d1) * sigma) / (2 * np.sqrt(tau)) - (r * X * np.exp(-r * tau) * norm.cdf(d2 if option_type == "call" else -d2))*(1 if option_type == 'call' else -1)
+    rho = X * tau * np.exp(-r * tau) * norm.cdf(d2 if option_type == "call" else -d2) * (1 if option_type == 'call' else -1)
+
     
     return {
         "price": price,
@@ -143,7 +184,3 @@ hedging solve for alpha
 at the money problems
 
 """
-
-def american_arb(S, strike, r, sigma, T, t, option_type = 'call'):
-    european_value = black_scholes(S, strike, r, sigma, T, t, option_type)
-    early_excercise = 
