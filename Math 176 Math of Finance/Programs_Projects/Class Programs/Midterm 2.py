@@ -7,7 +7,7 @@ from scipy.stats import norm
 
 Sample code:
 
-black_scholes(S, X, T, t, r, sigma, option_type="call")
+black_scholes(S, X, T, t, r, sigma)
 mode_of_ST(S, T, t, mu, sigma)
 option_delta(S, strike, r, sigma, T, t, option_type = 'call')
 print(option_behavior)
@@ -17,7 +17,7 @@ print(option_behavior)
 
 #   solving for price of option
 
-def black_scholestwo(S, X, T, t, r, sigma):
+def black_scholes(S, X, T, t, r, sigma):
     """
     Solve Black-Scholes equations for European call and put options.
     blac
@@ -56,57 +56,6 @@ def black_scholestwo(S, X, T, t, r, sigma):
     return pd.DataFrame(data)
 
 
-def black_scholes(S, X, T, t, r, sigma, option_type="call"):
-    """
-    Solve Black-Scholes equations for European call/put options.
-    
-    :param S: Current stock price
-    :param X: Strike price
-    :param T: Time to expiration
-    :param t: Current time
-    :param r: Risk-free interest rate
-    :param sigma: Volatility of the underlying asset
-    :param option_type: "call" for call option, "put" for put option
-    :return: Option price
-    """
-    tau = T - t
-    d1 = (np.log(S / X) + (r + 0.5 * sigma ** 2) * tau) / (sigma * np.sqrt(tau))
-    d2 = d1 - sigma * np.sqrt(tau)
-    
-    if option_type == "call":
-        price = S * norm.cdf(d1) - np.exp(-r * tau) * X * norm.cdf(d2)
-        delta = norm.cdf(d1)
-    elif option_type == "put":
-        price = np.exp(-r * tau) * X * norm.cdf(-d2) - S * norm.cdf(-d1)
-        delta = -norm.cdf(-d1)
-    else:
-        raise ValueError("option_type must be 'call' or 'put'")
-    
-    gamma = norm.pdf(d1) / (S * sigma * np.sqrt(tau))
-    vega = S * norm.pdf(d1) * np.sqrt(tau)
-    theta = - (S * norm.pdf(d1) * sigma) / (2 * np.sqrt(tau)) - (r * X * np.exp(-r * tau) * norm.cdf(d2 if option_type == "call" else -d2))*(1 if option_type == 'call' else -1)
-    rho = X * tau * np.exp(-r * tau) * norm.cdf(d2 if option_type == "call" else -d2) * (1 if option_type == 'call' else -1)
-
-    
-    return {
-        "price": price,
-        "delta": delta,
-        "gamma": gamma,
-        "vega": vega,
-        "theta": theta,
-        "rho": rho
-    }
-
-    """
-    if option_type == "call":
-        price = S * norm.cdf(d1) - np.exp(-r * tau) * X * norm.cdf(d2)
-    elif option_type == "put":
-        price = np.exp(-r * tau) * X * norm.cdf(-d2) - S * norm.cdf(-d1)
-    else:
-        raise ValueError("option_type must be 'call' or 'put' -lowercase-")
-
-    return price
-"""
 #           Mode of S(T)
 
 
@@ -176,6 +125,112 @@ Put Option Behavior:
 - As σ -> ∞, the put price approaches X * exp(-r * (T - t)).
 - As σ -> 0, the put price is max(X * exp(-r * (T - t)) - S, 0).
 """
+
+boundaries = {
+    "Boundary Condition": [
+        "S -> 0 (Call)", "S -> 0 (Put)",
+        "S -> ∞ (Call)", "S -> ∞ (Put)",
+        "T -> 0 (Call)", "T -> 0 (Put)",
+        "T -> ∞ (Call)", "T -> ∞ (Put)",
+        "σ -> 0 (Call)", "σ -> 0 (Put)",
+        "σ -> ∞ (Call)", "σ -> ∞ (Put)",
+        "r -> 0 (Call)", "r -> 0 (Put)",
+        "r -> ∞ (Call)", "r -> ∞ (Put)"
+    ],
+    "Option Price Behavior": [
+        "C -> 0", "P -> X * exp(-rT)",
+        "C -> S - X * exp(-rT)", "P -> 0",
+        "C -> max(S - X, 0)", "P -> max(X - S, 0)",
+        "C -> S - X * exp(-rT)", "P -> X * exp(-rT) - S",
+        "C -> Black-Scholes with zero volatility", "P -> Black-Scholes with zero volatility",
+        "C increases with σ", "P increases with σ",
+        "C -> Black-Scholes with r = 0", "P -> Black-Scholes with r = 0",
+        "C decreases with high r", "P increases with high r"
+    ],
+    "d1 Behavior": [
+        "d1 -> -∞", "d1 -> -∞",
+        "d1 -> ∞", "d1 -> -∞",
+        "d1 finite", "d1 finite",
+        "d1 -> 0", "d1 -> 0",
+        "d1 -> ∞", "d1 -> ∞",
+        "d1 -> -∞", "d1 -> -∞",
+        "d1 -> finite", "d1 -> finite"
+    ],
+    "d2 Behavior": [
+        "d2 -> -∞", "d2 -> -∞",
+        "d2 -> ∞", "d2 -> -∞",
+        "d2 finite", "d2 finite",
+        "d2 -> 0", "d2 -> 0",
+        "d2 -> -∞", "d2 -> -∞",
+        "d2 -> -∞", "d2 -> -∞",
+        "d2 -> finite", "d2 -> finite"
+    ],
+    "N(d1) Value": [
+        "0", "0",
+        "1", "0",
+        "Finite", "Finite",
+        "0.5", "0.5",
+        "1", "1",
+        "0", "0",
+        "Finite", "Finite"
+    ],
+    "N(d2) Value": [
+        "0", "0",
+        "1", "0",
+        "Finite", "Finite",
+        "0.5", "0.5",
+        "0", "0",
+        "Finite", "Finite"
+    ],
+    "Delta": [
+        "0", "-1",
+        "1", "0",
+        "Finite", "Finite",
+        "0.5", "-0.5",
+        "1", "-1",
+        "0", "0",
+        "Finite", "Finite"
+    ],
+    "Gamma": [
+        "0", "0",
+        "0", "0",
+        "Finite", "Finite",
+        "High", "High",
+        "0", "0",
+        "0", "0",
+        "Finite", "Finite"
+    ],
+    "Vega": [
+        "0", "0",
+        "0", "0",
+        "Finite", "Finite",
+        "0", "0",
+        "High", "High",
+        "0", "0",
+        "Finite", "Finite"
+    ],
+    "Theta": [
+        "0", "0",
+        "0", "0",
+        "Finite", "Finite",
+        "-High", "-High",
+        "0", "0",
+        "0", "0",
+        "Finite", "Finite"
+    ],
+    "Rho": [
+        "0", "0",
+        "0", "0",
+        "Finite", "Finite",
+        "Finite", "Finite",
+        "0", "0",
+        "0", "0",
+        "Finite", "Finite"
+    ]
+}
+
+limits = pd.DataFrame(boundaries)
+
 """
 
 cumulative cdf of lognormal dist
