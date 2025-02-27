@@ -126,110 +126,85 @@ Put Option Behavior:
 - As σ -> 0, the put price is max(X * exp(-r * (T - t)) - S, 0).
 """
 
-boundaries = {
-    "Boundary Condition": [
-        "S -> 0 (Call)", "S -> 0 (Put)",
-        "S -> ∞ (Call)", "S -> ∞ (Put)",
-        "T -> 0 (Call)", "T -> 0 (Put)",
-        "T -> ∞ (Call)", "T -> ∞ (Put)",
-        "σ -> 0 (Call)", "σ -> 0 (Put)",
-        "σ -> ∞ (Call)", "σ -> ∞ (Put)",
-        "r -> 0 (Call)", "r -> 0 (Put)",
-        "r -> ∞ (Call)", "r -> ∞ (Put)"
-    ],
-    "Option Price Behavior": [
-        "C -> 0", "P -> X * exp(-rT)",
-        "C -> S - X * exp(-rT)", "P -> 0",
-        "C -> max(S - X, 0)", "P -> max(X - S, 0)",
-        "C -> S - X * exp(-rT)", "P -> X * exp(-rT) - S",
-        "C -> Black-Scholes with zero volatility", "P -> Black-Scholes with zero volatility",
-        "C increases with σ", "P increases with σ",
-        "C -> Black-Scholes with r = 0", "P -> Black-Scholes with r = 0",
-        "C decreases with high r", "P increases with high r"
-    ],
-    "d1 Behavior": [
-        "d1 -> -∞", "d1 -> -∞",
-        "d1 -> ∞", "d1 -> -∞",
-        "d1 finite", "d1 finite",
-        "d1 -> 0", "d1 -> 0",
-        "d1 -> ∞", "d1 -> ∞",
-        "d1 -> -∞", "d1 -> -∞",
-        "d1 -> finite", "d1 -> finite"
-    ],
-    "d2 Behavior": [
-        "d2 -> -∞", "d2 -> -∞",
-        "d2 -> ∞", "d2 -> -∞",
-        "d2 finite", "d2 finite",
-        "d2 -> 0", "d2 -> 0",
-        "d2 -> -∞", "d2 -> -∞",
-        "d2 -> -∞", "d2 -> -∞",
-        "d2 -> finite", "d2 -> finite"
-    ],
-    "N(d1) Value": [
-        "0", "0",
-        "1", "0",
-        "Finite", "Finite",
-        "0.5", "0.5",
-        "1", "1",
-        "0", "0",
-        "Finite", "Finite"
-    ],
-    "N(d2) Value": [
-        "0", "0",
-        "1", "0",
-        "Finite", "Finite",
-        "0.5", "0.5",
-        "0", "0",
-        "Finite", "Finite"
-    ],
-    "Delta": [
-        "0", "-1",
-        "1", "0",
-        "Finite", "Finite",
-        "0.5", "-0.5",
-        "1", "-1",
-        "0", "0",
-        "Finite", "Finite"
-    ],
-    "Gamma": [
-        "0", "0",
-        "0", "0",
-        "Finite", "Finite",
-        "High", "High",
-        "0", "0",
-        "0", "0",
-        "Finite", "Finite"
-    ],
-    "Vega": [
-        "0", "0",
-        "0", "0",
-        "Finite", "Finite",
-        "0", "0",
-        "High", "High",
-        "0", "0",
-        "Finite", "Finite"
-    ],
-    "Theta": [
-        "0", "0",
-        "0", "0",
-        "Finite", "Finite",
-        "-High", "-High",
-        "0", "0",
-        "0", "0",
-        "Finite", "Finite"
-    ],
-    "Rho": [
-        "0", "0",
-        "0", "0",
-        "Finite", "Finite",
-        "Finite", "Finite",
-        "0", "0",
-        "0", "0",
-        "Finite", "Finite"
+conditions = [
+        "S -> 0 (Call)", "S -> 0 (Put)", "S -> ∞ (Call)", "S -> ∞ (Put)",
+        "T -> 0 (Call)", "T -> 0 (Put)", "T -> ∞ (Call)", "T -> ∞ (Put)",
+        "σ -> 0 (Call)", "σ -> 0 (Put)", "σ -> ∞ (Call)", "σ -> ∞ (Put)",
+        "r -> 0 (Call)", "r -> 0 (Put)", "r -> ∞ (Call)", "r -> ∞ (Put)"
     ]
+    
+behaviors = [
+    "C -> 0", "P -> X * exp(-rT)", "C -> S - X * exp(-rT)", "P -> 0",
+    "C -> max(S - X, 0)", "P -> max(X - S, 0)", "C -> S - X * exp(-rT)", "P -> X * exp(-rT) - S",
+    "C -> Black-Scholes with zero volatility", "P -> Black-Scholes with zero volatility",
+    "C increases with σ", "P increases with σ", "C -> Black-Scholes with r = 0", "P -> Black-Scholes with r = 0",
+    "C decreases with high r", "P increases with high r"
+]
+
+d1_values = [
+    "d1 -> -∞", "d1 -> -∞", "d1 -> ∞", "d1 -> -∞",
+    "d1 finite", "d1 finite", "d1 -> 0", "d1 -> 0",
+    "d1 -> ∞", "d1 -> ∞", "d1 -> -∞", "d1 -> -∞",
+    "d1 -> finite", "d1 -> finite"
+]
+
+d2_values = [
+    "d2 -> -∞", "d2 -> -∞", "d2 -> ∞", "d2 -> -∞",
+    "d2 finite", "d2 finite", "d2 -> 0", "d2 -> 0",
+    "d2 -> -∞", "d2 -> -∞", "d2 -> -∞", "d2 -> -∞",
+    "d2 -> finite", "d2 -> finite"
+]
+
+N_d1_values = [
+    "0", "0", "1", "0", "Finite", "Finite", "0.5", "0.5",
+    "1", "1", "0", "0", "Finite", "Finite"
+]
+
+N_d2_values = [
+    "0", "0", "1", "0", "Finite", "Finite", "0.5", "0.5",
+    "0", "0", "Finite", "Finite"
+]
+
+deltas = [
+    "0", "-1", "1", "0", "Finite", "Finite", "0.5", "-0.5",
+    "1", "-1", "0", "0", "Finite", "Finite"
+]
+
+gammas = [
+    "0", "0", "0", "0", "Finite", "Finite", "High", "High",
+    "0", "0", "0", "0", "Finite", "Finite"
+]
+
+vegas = [
+    "0", "0", "0", "0", "Finite", "Finite", "0", "0",
+    "High", "High", "0", "0", "Finite", "Finite"
+]
+
+thetas = [
+    "0", "0", "0", "0", "Finite", "Finite", "-High", "-High",
+    "0", "0", "0", "0", "Finite", "Finite"
+]
+
+rhos = [
+    "0", "0", "0", "0", "Finite", "Finite", "Finite", "Finite",
+    "0", "0", "0", "0", "Finite", "Finite"
+]
+
+data = {
+    "Boundary Condition": conditions,
+    "Option Price Behavior": behaviors,
+    "d1 Behavior": d1_values,
+    "d2 Behavior": d2_values,
+    "N(d1) Value": N_d1_values,
+    "N(d2) Value": N_d2_values,
+    "Delta": deltas,
+    "Gamma": gammas,
+    "Vega": vegas,
+    "Theta": thetas,
+    "Rho": rhos
 }
 
-limits = pd.DataFrame(boundaries)
+limits = pd.DataFrame(data)
 
 """
 
