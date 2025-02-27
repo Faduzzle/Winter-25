@@ -11,6 +11,8 @@ black_scholes(S, X, T, t, r, sigma)
 mode_of_ST(S, T, t, mu, sigma)
 option_delta(S, strike, r, sigma, T, t, option_type = 'call')
 print(option_behavior)
+gbm_lognormal_stats(x=100, X_t=100, mu=0.05, sigma=0.2, T_minus_t=1)
+
 
 """
 
@@ -104,35 +106,14 @@ def option_delta(S, strike, r, sigma, T, t, option_type = 'call'):
 
     return delta
 
-option_behavior = """
-Call Option Behavior:
-- As S -> 0, the call option price approaches 0.
-- As S -> ∞, the call option price approaches S - X * exp(-r * (T - t)).
-- As T -> t, the call price is max(S - X, 0).
-- As T -> ∞, the call price approaches S.
-- As r -> ∞, the call price approaches S.
-- As r -> 0, the call price follows Black-Scholes with r = 0.
-- As σ -> ∞, the call price approaches S.
-- As σ -> 0, the call price is max(S - X * exp(-r * (T - t)), 0).
-
-Put Option Behavior:
-- As S -> 0, the put option price approaches X * exp(-r * (T - t)).
-- As S -> ∞, the put option price approaches 0.
-- As T -> t, the put price is max(X - S, 0).
-- As T -> ∞, the put price approaches 0.
-- As r -> ∞, the put price approaches 0.
-- As r -> 0, the put price follows Black-Scholes with r = 0.
-- As σ -> ∞, the put price approaches X * exp(-r * (T - t)).
-- As σ -> 0, the put price is max(X * exp(-r * (T - t)) - S, 0).
-"""
 
 conditions = [
-        "S -> 0 (Call)", "S -> 0 (Put)", "S -> ∞ (Call)", "S -> ∞ (Put)",
-        "T -> 0 (Call)", "T -> 0 (Put)", "T -> ∞ (Call)", "T -> ∞ (Put)",
-        "σ -> 0 (Call)", "σ -> 0 (Put)", "σ -> ∞ (Call)", "σ -> ∞ (Put)",
-        "r -> 0 (Call)", "r -> 0 (Put)", "r -> ∞ (Call)", "r -> ∞ (Put)"
-    ]
-    
+    "S -> 0 (Call)", "S -> 0 (Put)", "S -> ∞ (Call)", "S -> ∞ (Put)",
+    "T -> 0 (Call)", "T -> 0 (Put)", "T -> ∞ (Call)", "T -> ∞ (Put)",
+    "σ -> 0 (Call)", "σ -> 0 (Put)", "σ -> ∞ (Call)", "σ -> ∞ (Put)",
+    "r -> 0 (Call)", "r -> 0 (Put)", "r -> ∞ (Call)", "r -> ∞ (Put)"
+]
+
 behaviors = [
     "C -> 0", "P -> X * exp(-rT)", "C -> S - X * exp(-rT)", "P -> 0",
     "C -> max(S - X, 0)", "P -> max(X - S, 0)", "C -> S - X * exp(-rT)", "P -> X * exp(-rT) - S",
@@ -141,54 +122,25 @@ behaviors = [
     "C decreases with high r", "P increases with high r"
 ]
 
-d1_values = [
-    "d1 -> -∞", "d1 -> -∞", "d1 -> ∞", "d1 -> -∞",
-    "d1 finite", "d1 finite", "d1 -> 0", "d1 -> 0",
-    "d1 -> ∞", "d1 -> ∞", "d1 -> -∞", "d1 -> -∞",
-    "d1 -> finite", "d1 -> finite"
-]
+d1_values = ["d1 -> -∞", "d1 -> -∞", "d1 -> ∞", "d1 -> -∞", "d1 finite", "d1 finite", "d1 -> 0", "d1 -> 0",
+             "d1 -> ∞", "d1 -> ∞", "d1 -> -∞", "d1 -> -∞", "d1 -> finite", "d1 -> finite", "d1 -> -∞", "d1 -> ∞"]
 
-d2_values = [
-    "d2 -> -∞", "d2 -> -∞", "d2 -> ∞", "d2 -> -∞",
-    "d2 finite", "d2 finite", "d2 -> 0", "d2 -> 0",
-    "d2 -> -∞", "d2 -> -∞", "d2 -> -∞", "d2 -> -∞",
-    "d2 -> finite", "d2 -> finite"
-]
+d2_values = ["d2 -> -∞", "d2 -> -∞", "d2 -> ∞", "d2 -> -∞", "d2 finite", "d2 finite", "d2 -> 0", "d2 -> 0",
+             "d2 -> -∞", "d2 -> -∞", "d2 -> -∞", "d2 -> -∞", "d2 -> finite", "d2 -> finite", "d2 -> -∞", "d2 -> ∞"]
 
-N_d1_values = [
-    "0", "0", "1", "0", "Finite", "Finite", "0.5", "0.5",
-    "1", "1", "0", "0", "Finite", "Finite"
-]
+N_d1_values = ["0", "0", "1", "0", "Finite", "Finite", "0.5", "0.5", "1", "1", "0", "0", "Finite", "Finite", "0", "1"]
 
-N_d2_values = [
-    "0", "0", "1", "0", "Finite", "Finite", "0.5", "0.5",
-    "0", "0", "Finite", "Finite"
-]
+N_d2_values = ["0", "0", "1", "0", "Finite", "Finite", "0.5", "0.5", "0", "0", "Finite", "Finite", "0", "1", "0", "1"]
 
-deltas = [
-    "0", "-1", "1", "0", "Finite", "Finite", "0.5", "-0.5",
-    "1", "-1", "0", "0", "Finite", "Finite"
-]
+deltas = ["0", "-1", "1", "0", "Finite", "Finite", "0.5", "-0.5", "1", "-1", "0", "0", "Finite", "Finite", "0", "1"]
 
-gammas = [
-    "0", "0", "0", "0", "Finite", "Finite", "High", "High",
-    "0", "0", "0", "0", "Finite", "Finite"
-]
+gammas = ["0", "0", "0", "0", "Finite", "Finite", "High", "High", "0", "0", "0", "0", "Finite", "Finite", "0", "1"]
 
-vegas = [
-    "0", "0", "0", "0", "Finite", "Finite", "0", "0",
-    "High", "High", "0", "0", "Finite", "Finite"
-]
+vegas = ["0", "0", "0", "0", "Finite", "Finite", "0", "0", "High", "High", "0", "0", "Finite", "Finite", "0", "1"]
 
-thetas = [
-    "0", "0", "0", "0", "Finite", "Finite", "-High", "-High",
-    "0", "0", "0", "0", "Finite", "Finite"
-]
+thetas = ["0", "0", "0", "0", "Finite", "Finite", "-High", "-High", "0", "0", "0", "0", "Finite", "Finite", "0", "1"]
 
-rhos = [
-    "0", "0", "0", "0", "Finite", "Finite", "Finite", "Finite",
-    "0", "0", "0", "0", "Finite", "Finite"
-]
+rhos = ["0", "0", "0", "0", "Finite", "Finite", "Finite", "Finite", "0", "0", "0", "0", "Finite", "Finite", "0", "1"]
 
 data = {
     "Boundary Condition": conditions,
@@ -204,9 +156,56 @@ data = {
     "Rho": rhos
 }
 
-limits = pd.DataFrame(data)
+df_boundaries = pd.DataFrame(data).set_index("Boundary Condition")
 
+def gbm_lognormal_stats(x, X_t, mu, sigma, T_minus_t):
+    """
+    Calculate various statistics for a lognormal variable arising from a 
+    geometric Brownian motion (GBM) process at a future time.
+    
+    Parameters:
+        x (float or array-like): The value(s) at which to evaluate the CDF and PDF.
+        X_t (float): The value of the process at time t.
+        mu (float): Drift coefficient of the GBM process.
+        sigma (float): Volatility coefficient of the GBM process.
+        T_minus_t (float): Time difference between the future time T and current time t.
+        
+    Returns:
+        dict: A dictionary containing:
+            'cdf'      : Cumulative Distribution Function evaluated at x.
+            'pdf'      : Probability Density Function evaluated at x.
+            'mean'     : Mean of the lognormal distribution.
+            'median'   : Median of the lognormal distribution.
+            'mode'     : Mode of the lognormal distribution.
+            'variance' : Variance of the lognormal distribution.
+    """
+    # Update the parameters for the lognormal distribution
+    mu_1 = np.log(X_t) + (mu - 0.5 * sigma**2) * T_minus_t
+    sigma_1 = sigma * np.sqrt(T_minus_t)
+    
+    # Calculate the CDF and PDF at x
+    # Note: For x > 0; x can be a scalar or an array.
+    cdf = norm.cdf(np.log(x), loc=mu_1, scale=sigma_1)
+    pdf = norm.pdf(np.log(x), loc=mu_1, scale=sigma_1) / x  # Adjusted for lognormal
+    
+    # Compute moments of the lognormal distribution
+    mean = np.exp(mu_1 + 0.5 * sigma_1**2)
+    median = np.exp(mu_1)
+    mode = np.exp(mu_1 - sigma_1**2)
+    variance = (np.exp(sigma_1**2) - 1) * np.exp(2 * mu_1 + sigma_1**2)
+    
+    stats= {
+        'cdf': cdf,
+        'pdf': pdf,
+        'mean': mean,
+        'median': median,
+        'mode': mode,
+        'variance': variance
+    }
+    for key, value in stats.items():
+        print(f"{key.capitalize()}: {value:.4f}" if np.isscalar(value) else f"{key.capitalize()}: {value}")
 """
+
 
 cumulative cdf of lognormal dist
 realized volatility
